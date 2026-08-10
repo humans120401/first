@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -7,15 +8,20 @@ namespace Game.Gameplay
     {
         [SerializeField] int maxHp = 100;
         [SerializeField] float hitFlashDuration = 0.08f;
+        [SerializeField] bool disableOnDeath = true;
 
         int _currentHp;
         bool _isInvincible;
         SpriteRenderer _sr;
         Color _originalColor;
 
+        public int MaxHp => maxHp;
         public int CurrentHp => _currentHp;
         public bool IsDead => _currentHp <= 0;
         public bool IsInvincible => _isInvincible;
+
+        // 이 오브젝트가 죽었을 때 알림 - 구독자가 처리 방식을 정한다
+        public event Action Died;
 
         void Awake()
         {
@@ -29,7 +35,6 @@ namespace Game.Gameplay
             _isInvincible = value;
             if (_sr == null) return;
 
-            // 무적 중에는 반투명하게 표시
             var c = _originalColor;
             c.a = value ? 0.4f : 1f;
             _sr.color = c;
@@ -50,7 +55,12 @@ namespace Game.Gameplay
 
             if (_sr != null) StartCoroutine(HitFlash());
 
-            if (IsDead) OnDeath();
+            if (IsDead)
+            {
+                Debug.Log($"{name} 사망");
+                Died?.Invoke();
+                if (disableOnDeath) gameObject.SetActive(false);
+            }
         }
 
         IEnumerator HitFlash()
@@ -58,12 +68,6 @@ namespace Game.Gameplay
             _sr.color = Color.white;
             yield return new WaitForSeconds(hitFlashDuration);
             if (!_isInvincible) _sr.color = _originalColor;
-        }
-
-        void OnDeath()
-        {
-            Debug.Log($"{name} 사망");
-            gameObject.SetActive(false);
         }
     }
 }

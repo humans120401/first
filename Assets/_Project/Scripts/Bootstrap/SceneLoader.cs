@@ -21,12 +21,12 @@ namespace Game.Bootstrap
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-
         void OnEnable()
         {
             GameEvents.OnStageRequested += LoadStage;
             GameEvents.OnLobbyRequested += LoadLobby;
             GameEvents.OnRetryRequested += RetryCurrentStage;
+            GameEvents.OnStageCleared += RecordClear;
         }
 
         void OnDisable()
@@ -34,6 +34,7 @@ namespace Game.Bootstrap
             GameEvents.OnStageRequested -= LoadStage;
             GameEvents.OnLobbyRequested -= LoadLobby;
             GameEvents.OnRetryRequested -= RetryCurrentStage;
+            GameEvents.OnStageCleared -= RecordClear;
         }
 
         public void LoadLobby()
@@ -67,13 +68,12 @@ namespace Game.Bootstrap
             SceneManager.LoadScene(SceneNames.Stage(CurrentFloor));
         }
 
-        public void ClearAndReturn()
+        public void RecordClear()
         {
             if (CurrentFloor > 0)
                 ProgressStore.RecordClear(CurrentFloor);
 
             Debug.Log($"{CurrentFloor}Ãþ Å¬¸®¾î / ÃÖ°í ±â·Ï {ProgressStore.Current.clearedFloor}Ãþ");
-            LoadLobby();
         }
     }
 }
