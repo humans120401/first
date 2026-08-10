@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Game.Gameplay
@@ -14,6 +15,12 @@ namespace Game.Gameplay
         [SerializeField] float coyoteTime = 0.1f;
         [SerializeField] float jumpBuffer = 0.1f;
 
+        [Header("Dash")]
+        [SerializeField] float dashSpeed = 20f;
+        [SerializeField] float dashDuration = 0.18f;   // 대시가 지속되는 시간
+        [SerializeField] float dashCooldown = 0.6f;    // 다음 대시까지 대기
+        [SerializeField] float invincibleTime = 0.14f; // 무적 구간 (대시보다 짧게)
+
         [Header("Ground Check")]
         [SerializeField] Transform groundCheck;
         [SerializeField] float checkRadius = 0.15f;
@@ -21,14 +28,20 @@ namespace Game.Gameplay
 
         PlayerControls _controls;
         Rigidbody2D _rb;
+        Damageable _damageable;
+
         float _input;
         float _coyoteCounter;
         float _bufferCounter;
+        float _dashCooldownTimer;
         bool _isGrounded;
+        bool _isDashing;
+        int _facing = 1;   // 1 = 오른쪽, -1 = 왼쪽
 
         void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
+            _damageable = GetComponent<Damageable>();
             _controls = new PlayerControls();
         }
 
@@ -37,12 +50,14 @@ namespace Game.Gameplay
             _controls.Player.Enable();
             _controls.Player.Jump.started += OnJumpStarted;
             _controls.Player.Jump.canceled += OnJumpCanceled;
+            _controls.Player.Dash.started += OnDashStarted;
         }
 
         void OnDisable()
         {
             _controls.Player.Jump.started -= OnJumpStarted;
             _controls.Player.Jump.canceled -= OnJumpCanceled;
+            _controls.Player.Dash.started -= OnDashStarted;
             _controls.Player.Disable();
         }
 
@@ -50,30 +65,50 @@ namespace Game.Gameplay
 
         void OnJumpCanceled(InputAction.CallbackContext ctx)
         {
+            if (_isDashing) return;
             if (_rb.linearVelocity.y > 0f)
                 _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _rb.linearVelocity.y * 0.5f);
+        }
+
+        void OnDashStarted(InputAction.CallbackContext ctx)
+        {
+            if (_isDashing || _dashCooldownTimer > 0f) return;
+            StartCoroutine(DashRoutine());
+        }
+
+        IEnumerator DashRoutine()
+        {
+            _isDashing = true;
+            _dashCooldownTimer = dashCooldown;
+
+            float originalGravity = _rb.gravityScale;
+            _rb.gravityScale = 0f;   // 대시 중에는 낙하하지 않는다
+
+            if (_damageable != null) _damageable.SetInvincible(true);
+
+            _rb.linearVelocity = new Vector2(_facing * dashSpeed, 0f);
+
+            yield return new WaitForSeconds(invincibleTime);
+            if (_damageable != null) _damageable.SetInvincible(false);
+
+            yield return new WaitForSeconds(dashDuration - invincibleTime);
+
+            _rb.gravityScale = originalGravity;
+            _isDashing = false;
         }
 
         void Update()
         {
             _input = _controls.Player.Move.ReadValue<float>();
 
-            var hit = Physics2D.OverlapCircle(
+            _isGrounded = Physics2D.OverlapCircle(
                 groundCheck.position, checkRadius, groundLayer);
-            _isGrounded = hit;
 
-            // 진단용 — 원인 확인 후 삭제할 블록
-           /* if (Time.frameCount % 30 == 0)
-            {
-                Debug.Log(
-                    $"원위치 {groundCheck.position} | " +
-                    $"반지름 {checkRadius} | " +
-                    $"마스크 {groundLayer.value} | " +
-                    $"감지 {(hit ? hit.name + " (layer " + hit.gameObject.layer + ")" : "없음")}");
-            }
-           */
             _coyoteCounter = _isGrounded ? coyoteTime : _coyoteCounter - Time.deltaTime;
             _bufferCounter -= Time.deltaTime;
+            _dashCooldownTimer -= Time.deltaTime;
+
+            if (_isDashing) return;   // 대시 중에는 점프 입력을 처리하지 않는다
 
             if (_bufferCounter > 0f && _coyoteCounter > 0f)
             {
@@ -85,12 +120,17 @@ namespace Game.Gameplay
 
         void FixedUpdate()
         {
+            if (_isDashing) return;   // 대시 중에는 이동 입력을 무시한다
+
             _rb.linearVelocity = new Vector2(_input * moveSpeed, _rb.linearVelocity.y);
 
-            // 이동 방향으로 스프라이트와 자식 오브젝트를 함께 뒤집는다
             if (_input != 0f)
-                transform.localScale = new Vector3(Mathf.Sign(_input), 1f, 1f);
+            {
+                _facing = (int)Mathf.Sign(_input);
+                transform.localScale = new Vector3(_facing, 1f, 1f);
+            }
         }
+
         void OnDrawGizmosSelected()
         {
             if (groundCheck == null) return;
