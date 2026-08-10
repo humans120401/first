@@ -86,8 +86,11 @@ namespace Game.Gameplay
         void FixedUpdate()
         {
             _rb.linearVelocity = new Vector2(_input * moveSpeed, _rb.linearVelocity.y);
-        }
 
+            // 이동 방향으로 스프라이트와 자식 오브젝트를 함께 뒤집는다
+            if (_input != 0f)
+                transform.localScale = new Vector3(Mathf.Sign(_input), 1f, 1f);
+        }
         void OnDrawGizmosSelected()
         {
             if (groundCheck == null) return;
