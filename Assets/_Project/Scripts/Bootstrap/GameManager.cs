@@ -21,7 +21,8 @@ namespace Game.Bootstrap
 
         void Start()
         {
-            ChangeState(GameState.MainMenu);
+            ChangeState(GameState.Lobby);
+            SceneLoader.Instance.LoadLobby();
         }
 
         public void ChangeState(GameState next)

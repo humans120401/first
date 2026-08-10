@@ -9,7 +9,6 @@ namespace Game.Bootstrap
     {
         public static SceneLoader Instance { get; private set; }
 
-        // 지금 플레이 중인 층 (로비면 0)
         public int CurrentFloor { get; private set; }
 
         void Awake()
@@ -23,10 +22,24 @@ namespace Game.Bootstrap
             DontDestroyOnLoad(gameObject);
         }
 
+        void OnEnable()
+        {
+            GameEvents.OnStageRequested += LoadStage;
+            GameEvents.OnLobbyRequested += LoadLobby;
+            GameEvents.OnRetryRequested += RetryCurrentStage;
+        }
+
+        void OnDisable()
+        {
+            GameEvents.OnStageRequested -= LoadStage;
+            GameEvents.OnLobbyRequested -= LoadLobby;
+            GameEvents.OnRetryRequested -= RetryCurrentStage;
+        }
+
         public void LoadLobby()
         {
             CurrentFloor = 0;
-            Time.timeScale = 1f;   // 일시정지 상태로 나갔을 경우 대비
+            Time.timeScale = 1f;
             SceneManager.LoadScene(SceneNames.Lobby);
         }
 
@@ -43,7 +56,6 @@ namespace Game.Bootstrap
             SceneManager.LoadScene(SceneNames.Stage(floor));
         }
 
-        // 사망 후 재시작
         public void RetryCurrentStage()
         {
             if (CurrentFloor <= 0)
@@ -55,7 +67,6 @@ namespace Game.Bootstrap
             SceneManager.LoadScene(SceneNames.Stage(CurrentFloor));
         }
 
-        // 클리어 처리 후 로비로
         public void ClearAndReturn()
         {
             if (CurrentFloor > 0)
