@@ -18,13 +18,22 @@ namespace Game.Presentation
         {
             for (int i = 0; i < floorButtons.Length; i++)
             {
-                if (floorButtons[i] == null) continue;
+                if (floorButtons[i] == null)
+                {
+                    Debug.LogError($"[LobbyUI] 버튼 {i}번이 연결되지 않았습니다");
+                    continue;
+                }
 
-                int floor = i + 1;   // 반복 변수를 직접 쓰면 모든 버튼이 마지막 값을 쓴다
-                floorButtons[i].onClick.AddListener(() => GameEvents.RequestStage(floor));
+                int floor = i + 1;
+                floorButtons[i].onClick.AddListener(() =>
+                {
+                    Debug.Log($"[LobbyUI] {floor}층 버튼 클릭됨");
+                    GameEvents.RequestStage(floor);
+                });
             }
 
             RefreshLockState();
+            Debug.Log("[LobbyUI] 초기화 완료");
         }
 
         void RefreshLockState()
