@@ -9,16 +9,26 @@ namespace Game.Gameplay
         [SerializeField] Damageable player;
         [SerializeField] Damageable[] enemies;
 
+        [Header("Stage Info")]
+        [SerializeField] int floorNumber = 1;   // 이 씬이 몇 층인지
+
         [Header("Timing")]
-        [SerializeField] float resultDelay = 0.8f;   // 결과 표시까지 여유
+        [SerializeField] float resultDelay = 0.8f;
 
         int _aliveEnemies;
+        int _timesHit;
+        float _startTime;
         bool _finished;
 
         void Start()
         {
+            _startTime = Time.time;
+
             if (player != null)
+            {
                 player.Died += OnPlayerDied;
+                player.Damaged += OnPlayerDamaged;
+            }
 
             _aliveEnemies = 0;
             foreach (var enemy in enemies)
@@ -28,13 +38,16 @@ namespace Game.Gameplay
                 enemy.Died += OnEnemyDied;
             }
 
-            Debug.Log($"[Stage] 시작 / 적 {_aliveEnemies}체");
+            Debug.Log($"[Stage {floorNumber}] 시작 / 적 {_aliveEnemies}체");
         }
 
         void OnDestroy()
         {
             if (player != null)
+            {
                 player.Died -= OnPlayerDied;
+                player.Damaged -= OnPlayerDamaged;
+            }
 
             foreach (var enemy in enemies)
             {
@@ -43,13 +56,13 @@ namespace Game.Gameplay
             }
         }
 
+        void OnPlayerDamaged() => _timesHit++;
+
         void OnEnemyDied()
         {
             if (_finished) return;
 
             _aliveEnemies--;
-            Debug.Log($"[Stage] 적 사망 / 남은 적 {_aliveEnemies}체");
-
             if (_aliveEnemies <= 0)
             {
                 _finished = true;
@@ -65,7 +78,15 @@ namespace Game.Gameplay
             Invoke(nameof(FireDied), resultDelay);
         }
 
-        void FireCleared() => GameEvents.RaiseStageCleared();
+        void FireCleared()
+        {
+            float elapsed = Time.time - _startTime;
+            var result = new StageResult(floorNumber, elapsed, _timesHit);
+
+            Debug.Log($"[Stage {floorNumber}] 클리어 / {elapsed:F1}초 / 피격 {_timesHit}회");
+            GameEvents.RaiseStageCleared(result);
+        }
+
         void FireDied() => GameEvents.RaisePlayerDied();
     }
 }

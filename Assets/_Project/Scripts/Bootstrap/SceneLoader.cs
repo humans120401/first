@@ -68,12 +68,12 @@ namespace Game.Bootstrap
             SceneManager.LoadScene(SceneNames.Stage(CurrentFloor));
         }
 
-        public void RecordClear()
+        void RecordClear(StageResult result)
         {
-            if (CurrentFloor > 0)
-                ProgressStore.RecordClear(CurrentFloor);
+            if (result.Floor > 0)
+                ProgressStore.RecordClear(result.Floor);
 
-            Debug.Log($"{CurrentFloor}Ãþ Å¬¸®¾î / ÃÖ°í ±â·Ï {ProgressStore.Current.clearedFloor}Ãþ");
+            Debug.Log($"{result.Floor}Ãþ Å¬¸®¾î / ÃÖ°í ±â·Ï {ProgressStore.Current.clearedFloor}Ãþ");
         }
     }
 }

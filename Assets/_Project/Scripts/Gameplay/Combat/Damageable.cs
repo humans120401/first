@@ -21,7 +21,9 @@ namespace Game.Gameplay
         public bool IsInvincible => _isInvincible;
 
         // 이 오브젝트가 죽었을 때 알림 - 구독자가 처리 방식을 정한다
+
         public event Action Died;
+        public event Action Damaged;   // 추가
 
         void Awake()
         {
@@ -49,9 +51,9 @@ namespace Game.Gameplay
                 Debug.Log($"{name} 회피 성공");
                 return;
             }
-
             _currentHp = Mathf.Max(0, _currentHp - amount);
             Debug.Log($"{name} 피격 / 남은 체력 {_currentHp}");
+            Damaged?.Invoke();   // 추가
 
             if (_sr != null) StartCoroutine(HitFlash());
 

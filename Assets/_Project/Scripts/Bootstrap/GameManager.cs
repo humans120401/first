@@ -21,6 +21,7 @@ namespace Game.Bootstrap
 
         void Start()
         {
+            Game.Progression.RewardService.Initialize();
             ChangeState(GameState.Lobby);
             SceneLoader.Instance.LoadLobby();
         }

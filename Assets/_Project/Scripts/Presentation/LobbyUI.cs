@@ -11,6 +11,9 @@ namespace Game.Presentation
         [Header("Floor Buttons")]
         [SerializeField] Button[] floorButtons = new Button[5];
 
+        [Header("Currency")]                                    // 추가
+        [SerializeField] TextMeshProUGUI currencyText;           // 추가
+
         [Header("Debug")]
         [SerializeField] bool unlockAllFloors = true;   // 개발 중 전체 개방
 
@@ -33,6 +36,7 @@ namespace Game.Presentation
             }
 
             RefreshLockState();
+            RefreshCurrency();                                  // 추가
             Debug.Log("[LobbyUI] 초기화 완료");
         }
 
@@ -52,6 +56,14 @@ namespace Game.Presentation
                 if (label != null)
                     label.text = unlocked ? $"{floor}층" : $"{floor}층 (잠김)";
             }
+        }
+
+        // 추가된 메서드
+        void RefreshCurrency()
+        {
+            Debug.Log($"[Lobby] 보유 재화 {ProgressStore.Current.currency}G");
+            if (currencyText != null)
+                currencyText.text = $"{ProgressStore.Current.currency}G";
         }
     }
 }

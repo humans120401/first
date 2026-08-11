@@ -557,6 +557,7 @@ MonoBehaviour:
   player: {fileID: 182426242}
   enemies:
   - {fileID: 439473177}
+  floorNumber: 4
   resultDelay: 0.8
 --- !u!4 &501675255
 Transform:

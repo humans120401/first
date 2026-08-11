@@ -37,10 +37,10 @@ namespace Game.Presentation
             GameEvents.OnStageCleared -= ShowCleared;
             GameEvents.OnPlayerDied -= ShowFailed;
         }
-
-        void ShowCleared()
+        void ShowCleared(StageResult result)
         {
-            Show("스테이지 클리어", showRetry: false);
+            Show($"클리어\n<size=40>{result.ClearTime:F1}초 · 피격 {result.TimesHit}회</size>",
+                 showRetry: false);
         }
 
         void ShowFailed()
