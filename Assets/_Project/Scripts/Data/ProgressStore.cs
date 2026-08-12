@@ -21,5 +21,11 @@ namespace Game.Data
         {
             Current.currency += amount;
         }
+        public static bool SpendCurrency(int amount)
+        {
+            if (Current.currency < amount) return false;
+            Current.currency -= amount;
+            return true;
+        }
     }
 }
