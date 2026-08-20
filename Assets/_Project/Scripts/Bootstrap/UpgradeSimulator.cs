@@ -80,6 +80,47 @@ namespace Game.Bootstrap
             Debug.Log(msg);
         }
 
+        [ContextMenu("4. Test Session Flow")]
+        void TestSession()
+        {
+            if (!Ready()) return;
+
+            ProgressStore.Reset();
+            ProgressStore.AddCurrency(1000);
+            PlayerStats.Reset();
+
+            var gen = new UpgradeOptionGenerator(new UnityRandomProvider(seed), tables);
+            var session = new UpgradeSession(gen, PlayerStats.Current);
+
+            session.Rejected += msg => Debug.LogWarning($"거절: {msg}");
+            session.OptionApplied += o => Debug.Log($"적용: [{Label(o.Rarity)}] {StatName(o.Stat)} {o.Value:+0.0;-0.0}");
+
+            Debug.Log($"시작 재화 {ProgressStore.Current.currency}G");
+
+            session.Draw();
+            LogOptions(session, "첫 뽑기");
+
+            session.Reroll();
+            LogOptions(session, $"리롤 1회 (다음 비용 {session.NextRerollCost}G)");
+
+            session.Reroll();
+            LogOptions(session, $"리롤 2회 (다음 비용 {session.NextRerollCost}G)");
+
+            session.Select(0);
+
+            Debug.Log($"남은 재화 {ProgressStore.Current.currency}G / " +
+                      $"공격력 {PlayerStats.Current.Get(StatType.Attack):F1} / " +
+                      $"체력 {PlayerStats.Current.Get(StatType.MaxHp):F1}");
+        }
+
+        void LogOptions(UpgradeSession session, string title)
+        {
+            string line = $"{title} (잔액 {ProgressStore.Current.currency}G): ";
+            foreach (var o in session.CurrentOptions)
+                line += $"  [{Label(o.Rarity)}] {StatName(o.Stat)} {o.Value:+0.0;-0.0}  ";
+            Debug.Log(line);
+        }
+
         [ContextMenu("3. Check Value Ranges")]
         void CheckValues()
         {
