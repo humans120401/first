@@ -349,6 +349,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.Damageable
   maxHp: 100
   hitFlashDuration: 0.08
+  disableOnDeath: 1
 --- !u!1 &439473176
 GameObject:
   m_ObjectHideFlags: 0
@@ -383,6 +384,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.Damageable
   maxHp: 100
   hitFlashDuration: 0.08
+  disableOnDeath: 1
 --- !u!61 &439473178
 BoxCollider2D:
   m_ObjectHideFlags: 0

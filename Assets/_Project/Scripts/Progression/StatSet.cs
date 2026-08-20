@@ -9,11 +9,14 @@ namespace Game.Progression
         readonly Dictionary<StatType, float> _baseValues = new();
         readonly List<StatModifier> _modifiers = new();
 
-        public StatSet(float baseAttack, float baseMaxHp, float baseMoveSpeed)
+        public StatSet(float baseAttack, float baseMaxHp, float baseMoveSpeed,
+                       float baseAttackSpeed, float baseCooldownRate)
         {
             _baseValues[StatType.Attack] = baseAttack;
             _baseValues[StatType.MaxHp] = baseMaxHp;
             _baseValues[StatType.MoveSpeed] = baseMoveSpeed;
+            _baseValues[StatType.AttackSpeed] = baseAttackSpeed;
+            _baseValues[StatType.CooldownRate] = baseCooldownRate;
         }
 
         public void AddModifier(StatModifier modifier)
@@ -30,14 +33,14 @@ namespace Game.Progression
         {
             float baseValue = _baseValues.TryGetValue(type, out var b) ? b : 0f;
 
-            float bonusRatio = 0f;
+            float bonus = 0f;
             foreach (var mod in _modifiers)
             {
                 if (mod.Type == type)
-                    bonusRatio += mod.Value;
+                    bonus += mod.Value;
             }
 
-            return baseValue * (1f + bonusRatio);
+            return baseValue + bonus;
         }
 
         // 몇 번 강화했는지 - UI 표시용
