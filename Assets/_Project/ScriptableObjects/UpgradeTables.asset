@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c5b697e0211c5147bfa77e10a0d67db, type: 3}
   m_Name: UpgradeTables
   m_EditorClassIdentifier: Game.Data::Game.Data.UpgradeTables
-  rarityTable: {fileID: 0}
-  statScaleTable: {fileID: 0}
+  rarityTable: {fileID: 11400000, guid: 3a0769b316b43954884878ad2fc233eb, type: 2}
+  statScaleTable: {fileID: 11400000, guid: 31a65cb3c4e412748babe1bb74126164, type: 2}
