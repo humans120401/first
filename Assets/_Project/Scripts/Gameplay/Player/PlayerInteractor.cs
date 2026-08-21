@@ -18,12 +18,16 @@ namespace Game.Gameplay
 
         void OnEnable()
         {
+            if (_controls == null) _controls = new PlayerControls();
+
             _controls.Player.Enable();
             _controls.Player.Interact.started += OnInteractPressed;
         }
 
         void OnDisable()
         {
+            if (_controls == null) return;
+
             _controls.Player.Interact.started -= OnInteractPressed;
             _controls.Player.Disable();
             GameEvents.HidePrompt();

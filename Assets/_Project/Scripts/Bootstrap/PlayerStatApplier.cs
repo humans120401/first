@@ -19,6 +19,11 @@ namespace Game.Bootstrap
             _attack = GetComponent<PlayerAttack>();
         }
 
+
+        void OnEnable() => GameEvents.OnStatsChanged += Apply;
+        void OnDisable() => GameEvents.OnStatsChanged -= Apply;
+
+
         void Start() => Apply();
 
         public void Apply()

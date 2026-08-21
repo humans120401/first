@@ -49,6 +49,8 @@ namespace Game.Gameplay
 
         void OnEnable()
         {
+            if (_controls == null) _controls = new PlayerControls();
+
             _controls.Player.Enable();
             _controls.Player.Jump.started += OnJumpStarted;
             _controls.Player.Jump.canceled += OnJumpCanceled;
@@ -57,6 +59,8 @@ namespace Game.Gameplay
 
         void OnDisable()
         {
+            if (_controls == null) return;
+
             _controls.Player.Jump.started -= OnJumpStarted;
             _controls.Player.Jump.canceled -= OnJumpCanceled;
             _controls.Player.Dash.started -= OnDashStarted;

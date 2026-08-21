@@ -4,6 +4,8 @@ namespace Game.Core
 {
     public static class GameEvents
     {
+
+
         // 게임 상태 변경
         public static event Action<GameState, GameState> OnStateChanged;
         public static void RaiseStateChanged(GameState prev, GameState next)
@@ -38,5 +40,9 @@ namespace Game.Core
 
         public static void RaiseStageCleared(StageResult result) => OnStageCleared?.Invoke(result);
         public static void RaisePlayerDied() => OnPlayerDied?.Invoke();
+
+        // 능력치가 바뀌었을 때 - Progression이 발행하고 Bootstrap이 듣는다
+        public static event Action OnStatsChanged;
+        public static void RaiseStatsChanged() => OnStatsChanged?.Invoke();
     }
 }

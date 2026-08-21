@@ -29,12 +29,16 @@ namespace Game.Gameplay
 
         void OnEnable()
         {
+            if (_controls == null) _controls = new PlayerControls();
+
             _controls.Player.Enable();
             _controls.Player.Attack.started += OnAttack;
         }
 
         void OnDisable()
         {
+            if (_controls == null) return;
+
             _controls.Player.Attack.started -= OnAttack;
             _controls.Player.Disable();
         }

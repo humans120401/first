@@ -86,11 +86,15 @@ namespace Game.Progression
             _options.Clear();
             RerollCount = 0;
 
+            GameEvents.RaiseStatsChanged();   // 추가
+
             OptionApplied?.Invoke(option);
             OptionsChanged?.Invoke();
             return true;
         }
 
         public int DrawCost => drawCost;
+
+
     }
 }
