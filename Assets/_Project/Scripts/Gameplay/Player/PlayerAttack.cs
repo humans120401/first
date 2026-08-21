@@ -8,12 +8,22 @@ namespace Game.Gameplay
         [Header("Attack")]
         [SerializeField] Transform attackPoint;
         [SerializeField] float attackRange = 0.8f;
-        [SerializeField] int damage = 10;
-        [SerializeField] float cooldown = 0.35f;
+        [SerializeField] float baseCooldown = 0.35f;
         [SerializeField] LayerMask enemyLayer;
 
         PlayerControls _controls;
         float _cooldownTimer;
+
+        // 외부에서 주입받는 값
+        int _damage = 10;
+        float _cooldownMultiplier = 1f;
+
+        public void SetDamage(int value) => _damage = value;
+        public void SetAttackSpeed(float percent)
+        {
+            if (percent <= 0f) percent = 100f;
+            _cooldownMultiplier = 100f / percent;
+        }
 
         void Awake() => _controls = new PlayerControls();
 
@@ -34,7 +44,7 @@ namespace Game.Gameplay
         void OnAttack(InputAction.CallbackContext ctx)
         {
             if (_cooldownTimer > 0f) return;
-            _cooldownTimer = cooldown;
+            _cooldownTimer = baseCooldown * _cooldownMultiplier;
 
             var hits = Physics2D.OverlapCircleAll(
                 attackPoint.position, attackRange, enemyLayer);
@@ -42,7 +52,7 @@ namespace Game.Gameplay
             foreach (var hit in hits)
             {
                 if (hit.TryGetComponent<Damageable>(out var target))
-                    target.TakeDamage(damage);
+                    target.TakeDamage(_damage);
             }
         }
 

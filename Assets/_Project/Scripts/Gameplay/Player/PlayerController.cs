@@ -10,6 +10,8 @@ namespace Game.Gameplay
         [Header("Move")]
         [SerializeField] float moveSpeed = 8f;
 
+        public void SetMoveSpeed(float value) => moveSpeed = value;
+
         [Header("Jump")]
         [SerializeField] float jumpForce = 14f;
         [SerializeField] float coyoteTime = 0.1f;
@@ -120,7 +122,7 @@ namespace Game.Gameplay
 
         void FixedUpdate()
         {
-            if (_isDashing) return;   // 대시 중에는 이동 입력을 무시한다
+            if (_isDashing) return;
 
             _rb.linearVelocity = new Vector2(_input * moveSpeed, _rb.linearVelocity.y);
 

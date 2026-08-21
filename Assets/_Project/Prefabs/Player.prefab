@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 6030848486093821323}
   - component: {fileID: 7809506143933079159}
   - component: {fileID: 4662414538914136962}
+  - component: {fileID: -7614449467996229377}
   m_Layer: 12
   m_Name: Player
   m_TagString: Untagged
@@ -242,8 +243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.PlayerAttack
   attackPoint: {fileID: 5821775902547855762}
   attackRange: 0.8
-  damage: 10
-  cooldown: 0.35
+  baseCooldown: 0.35
   enemyLayer:
     serializedVersion: 2
     m_Bits: 512
@@ -262,6 +262,18 @@ MonoBehaviour:
   maxHp: 100
   hitFlashDuration: 0.08
   disableOnDeath: 1
+--- !u!114 &-7614449467996229377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7949223303505781153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 585ecc53fda905c44baffc35ac0aaade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Bootstrap::Game.Bootstrap.PlayerStatApplier
 --- !u!1 &8651593861913060500
 GameObject:
   m_ObjectHideFlags: 0
